@@ -31,14 +31,14 @@ class PyImageSearchANPR:
 		# (i.e., the license plate itself)
 		self.debug_imshow("Pre-Blackhat", gray)
 		rectKern = cv2.getStructuringElement(cv2.MORPH_RECT, (13, 5))
-		blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKern)
+		blackhat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, rectKern)
 		self.debug_imshow("Blackhat", blackhat)
 		
 
 		# next, find regions in the image that are light -> convert to black
 		squareKern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 		light = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, squareKern)
-		light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+		light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 		self.debug_imshow("Light Regions", light, waitKey=True)
 
 		# cv2.imshow("y2", light)
@@ -77,11 +77,7 @@ class PyImageSearchANPR:
 		thresh = cv2.bitwise_and(thresh, thresh, mask=light)
 		thresh = cv2.dilate(thresh, None, iterations=2)
 		thresh = cv2.erode(thresh, None, iterations=1)
-		self.debug_imshow("Final", thresh, waitKey=True)
-
-		cv2.imshow("dsa", thresh)
-		cv2.waitKey(0)
-
+		self.debug_imshow("Thresh Final", thresh, waitKey=True)
 
 		# find contours in the thresholded image and sort them by
 		# their size in descending order, keeping only the largest
@@ -102,6 +98,7 @@ class PyImageSearchANPR:
 
 		# loop over the license plate candidate contours
 		for c in candidates:
+			print("in plate candidate contours")
 			# compute the bounding box of the contour and then use
 			# the bounding box to derive the aspect ratio
 			(x, y, w, h) = cv2.boundingRect(c)
@@ -129,13 +126,13 @@ class PyImageSearchANPR:
 				self.debug_imshow("License Plate", licensePlate)
 				self.debug_imshow("ROI", roi, waitKey=True)
 
-				cv2.imshow("License Plate", licensePlate)
-				cv2.waitKey(0)
-
 				break
 
 		# return a 2-tuple of the license plate ROI and the contour
 		# associated with it
+		print("Prepare to return")
+		print("Roi:",roi)
+		print("lpCnt:",lpCnt)
 		return (roi, lpCnt)
 
 	def build_tesseract_options(self, psm=7):
