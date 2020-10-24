@@ -8,7 +8,7 @@ import cv2
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 class PyImageSearchANPR:
-	def __init__(self, minAR=4, maxAR=5, debug=False):
+	def __init__(self, minAR=3, maxAR=5, debug=False):
 		# store the minimum and maximum rectangular aspect ratio
 		# values along with whether or not we are in debug mode
 		self.minAR = minAR
@@ -29,16 +29,16 @@ class PyImageSearchANPR:
 		# perform a blackhat morphological operation which will allow
 		# us to reveal dark regions (i.e., text) on light backgrounds
 		# (i.e., the license plate itself)
-		self.debug_imshow("Pre-Blackhat", gray)
+		self.debug_imshow("Gray", gray)
 		rectKern = cv2.getStructuringElement(cv2.MORPH_RECT, (13, 5))
-		blackhat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, rectKern)
+		blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKern)
 		self.debug_imshow("Blackhat", blackhat)
 		
 
 		# next, find regions in the image that are light -> convert to black
 		squareKern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 		light = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, squareKern)
-		light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+		light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 		self.debug_imshow("Light Regions", light, waitKey=True)
 
 		# compute the Scharr gradient representation of the blackhat
@@ -95,7 +95,6 @@ class PyImageSearchANPR:
 
 		# loop over the license plate candidate contours
 		for c in candidates:
-			print("in plate candidate contours")
 			# compute the bounding box of the contour and then use
 			# the bounding box to derive the aspect ratio
 			(x, y, w, h) = cv2.boundingRect(c)
@@ -147,11 +146,12 @@ class PyImageSearchANPR:
 		# convert the input image to grayscale, locate all candidate
 		# license plate regions in the image, and then process the
 		# candidates, leaving us with th *actual* license plate
+		
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 		candidates = self.locate_license_plate_candidates(gray)
 		(lp, lpCnt) = self.locate_license_plate(gray, candidates,
 			clearBorder=clearBorder)
-
+		
 		# only OCR the license plate if the license plate ROI is not
 		# empty
 		if lp is not None:
