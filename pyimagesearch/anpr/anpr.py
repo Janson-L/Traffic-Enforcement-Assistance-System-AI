@@ -41,9 +41,6 @@ class PyImageSearchANPR:
 		light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 		self.debug_imshow("Light Regions", light, waitKey=True)
 
-		# cv2.imshow("y2", light)
-		# cv2.waitKey(0)
-
 		# compute the Scharr gradient representation of the blackhat
 		# image in the x-direction and then scale the result back to
 		# the range [0, 255]
@@ -130,9 +127,6 @@ class PyImageSearchANPR:
 
 		# return a 2-tuple of the license plate ROI and the contour
 		# associated with it
-		print("Prepare to return")
-		print("Roi:",roi)
-		print("lpCnt:",lpCnt)
 		return (roi, lpCnt)
 
 	def build_tesseract_options(self, psm=7):
