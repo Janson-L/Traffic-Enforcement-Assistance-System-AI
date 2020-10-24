@@ -29,9 +29,11 @@ class PyImageSearchANPR:
 		# perform a blackhat morphological operation which will allow
 		# us to reveal dark regions (i.e., text) on light backgrounds
 		# (i.e., the license plate itself)
+		self.debug_imshow("Pre-Blackhat", gray)
 		rectKern = cv2.getStructuringElement(cv2.MORPH_RECT, (13, 5))
 		blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKern)
 		self.debug_imshow("Blackhat", blackhat)
+		
 
 		# next, find regions in the image that are light -> convert to black
 		squareKern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
