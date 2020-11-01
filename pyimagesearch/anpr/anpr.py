@@ -39,6 +39,7 @@ class PyImageSearchANPR:
 		squareKern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 		light = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, squareKern)
 		light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+		# slight=cv2.bitwise_not(light)
 		self.debug_imshow("Light Regions", light, waitKey=True)
 
 		# compute the Scharr gradient representation of the blackhat
@@ -55,10 +56,10 @@ class PyImageSearchANPR:
 
 		# blur the gradient representation, applying a closing
 		# operation, and threshold the image using Otsu's method
-		gradX = cv2.GaussianBlur(gradX, (5, 5), 0)
+		# gradX = cv2.GaussianBlur(gradX, (5, 5), 0)
 		gradX = cv2.morphologyEx(gradX, cv2.MORPH_CLOSE, rectKern)
-		thresh = cv2.threshold(gradX, 0, 255,
-			cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+		
+		ret, thresh = cv2.threshold(gradX, 100, 255 ,cv2.THRESH_BINARY)
 		self.debug_imshow("Grad Thresh", thresh)
 
 
@@ -66,6 +67,7 @@ class PyImageSearchANPR:
 		# thresholded image
 		thresh = cv2.erode(thresh, None, iterations=2)
 		thresh = cv2.dilate(thresh, None, iterations=2)
+		thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, rectKern)
 		self.debug_imshow("Grad Erode/Dilate", thresh)
 
 
@@ -84,6 +86,8 @@ class PyImageSearchANPR:
 		cnts = imutils.grab_contours(cnts)
 		cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:keep]
 
+		print("[DEBUG] cnt", cnts)
+
 		# return the list of contours
 		return cnts
 
@@ -101,14 +105,13 @@ class PyImageSearchANPR:
 			ar = w / float(h)
 
 			# check to see if the aspect ratio is rectangular
-			if ar >= self.minAR and ar <= self.maxAR:
+			if True: #  ar >= self.minAR and ar <= self.maxAR:
 				# store the license plate contour and extract the
 				# license plate from the gray scale image and then
 				# threshold it
 				lpCnt = c
 				licensePlate = gray[y:y + h, x:x + w]
-				roi = cv2.threshold(licensePlate, 0, 255,
-					cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+				roi = cv2.threshold(licensePlate, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
 				# check to see if we should clear any foreground
 				# pixels that are touching the border of the image
