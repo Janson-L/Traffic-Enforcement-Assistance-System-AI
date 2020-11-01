@@ -14,6 +14,9 @@ def cleanup_text(text):
 	# using OpenCV
 	return "".join([c if ord(c) < 128 else "" for c in text]).strip()
 
+def nothing(x):
+    pass
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--input", required=True,
@@ -38,7 +41,10 @@ for imagePath in imagePaths:
 	image = cv2.imread(imagePath)
 	image = imutils.resize(image, width=600)
 
-	# apply automatic license plate recognition
+
+	
+
+""" 	# apply automatic license plate recognition
 	(lpText, lpCnt) = anpr.find_and_ocr(image, psm=args["psm"],
 		clearBorder=args["clear_border"] > 0)
 
@@ -60,4 +66,4 @@ for imagePath in imagePaths:
 		# show the output ANPR image
 		print("[INFO] {}".format(lpText))
 		cv2.imshow("Output ANPR", image)
-		cv2.waitKey(0)
+		cv2.waitKey(0) """

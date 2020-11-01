@@ -8,6 +8,9 @@ import cv2
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 class PyImageSearchANPR:
+	def nothing(x):
+    	pass
+
 	def __init__(self, minAR=3, maxAR=5, debug=False):
 		# store the minimum and maximum rectangular aspect ratio
 		# values along with whether or not we are in debug mode
@@ -85,8 +88,6 @@ class PyImageSearchANPR:
 			cv2.CHAIN_APPROX_SIMPLE)
 		cnts = imutils.grab_contours(cnts)
 		cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:keep]
-
-		print("[DEBUG] cnt", cnts)
 
 		# return the list of contours
 		return cnts
