@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\Janson Liew\\.conda\\envs\\LicensePlateReader\\python.exe"
+    "python.pythonPath": "C:\\Users\\Janson Liew\\.conda\\envs\\LicensePlateReader\\python.exe",
+    "python.dataScience.jupyterServerURI": "local"
 }
