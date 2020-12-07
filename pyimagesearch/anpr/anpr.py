@@ -36,7 +36,8 @@ class PyImageSearchANPR:
 		# next, find regions in the image that are light -> convert to black
 		squareKern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 		light = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, squareKern)
-		light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+		#light = cv2.threshold(light, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+		light = cv2.adaptiveThreshold(light, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,11,2);		
 		self.debug_imshow("Light Regions", light, waitKey=True)
 
 		# cv2.imshow("y2", light)
