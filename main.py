@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 import base64
-from PIL import Image
 app = Flask(__name__)
 
 def base64ToImg(base64Img):
