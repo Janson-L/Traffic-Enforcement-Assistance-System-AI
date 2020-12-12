@@ -157,6 +157,7 @@ def LPR():
 def CarPlateRecognition():
     base64ToImg(request.json['img'])
     licensePlate=LPR()
+    os.remove("tempImage.jpg")
     return licensePlate
 
 if __name__ == "__main__":
