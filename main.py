@@ -18,6 +18,8 @@ import glob
 from model import CarModel
 from helpers import CarHelpers
 
+import json
+
 app = Flask(__name__)
 
 def base64ToImg(base64Img):
@@ -149,7 +151,7 @@ def LPR():
         plt.axis(False)
         plt.imshow(character,cmap='gray')
 
-    return final_string
+    return json.dumps({'LicensePlateNumber':final_string})
     
 @app.route("/", methods=["POST"])
 def CarPlateRecognition():
