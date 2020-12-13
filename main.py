@@ -36,15 +36,15 @@ def LPR():
     test_image_path = "tempImage.jpg"
     vehicle, LpImg,cor = CarHelpers.get_plate(test_image_path, wpod_net)
 
-    fig = plt.figure(figsize=(12,6))
-    grid = gridspec.GridSpec(ncols=2,nrows=1,figure=fig)
-    fig.add_subplot(grid[0])
-    plt.axis(False)
-    plt.imshow(vehicle)
-    grid = gridspec.GridSpec(ncols=2,nrows=1,figure=fig)
-    fig.add_subplot(grid[1])
-    plt.axis(False)
-    plt.imshow(LpImg[0])
+    # fig = plt.figure(figsize=(12,6))
+    # grid = gridspec.GridSpec(ncols=2,nrows=1,figure=fig)
+    # fig.add_subplot(grid[0])
+    # plt.axis(False)
+    # plt.imshow(vehicle)
+    # grid = gridspec.GridSpec(ncols=2,nrows=1,figure=fig)
+    # fig.add_subplot(grid[1])
+    # plt.axis(False)
+    # plt.imshow(LpImg[0])
 
     if (len(LpImg)): #check if there is at least one license image
         # Scales, calculates absolute values, and converts the result to 8-bit.
@@ -63,20 +63,20 @@ def LPR():
 
         
     # visualize results    
-    fig = plt.figure(figsize=(12,7))
-    plt.rcParams.update({"font.size":18})
-    grid = gridspec.GridSpec(ncols=2,nrows=3,figure = fig)
-    plot_image = [plate_image, gray, blur, binary,thre_mor]
-    plot_name = ["plate_image","gray","blur","binary","dilation"]
+    # fig = plt.figure(figsize=(12,7))
+    # plt.rcParams.update({"font.size":18})
+    # grid = gridspec.GridSpec(ncols=2,nrows=3,figure = fig)
+    # plot_image = [plate_image, gray, blur, binary,thre_mor]
+    # plot_name = ["plate_image","gray","blur","binary","dilation"]
 
-    for i in range(len(plot_image)):
-        fig.add_subplot(grid[i])
-        plt.axis(False)
-        plt.title(plot_name[i])
-        if i ==0:
-            plt.imshow(plot_image[i])
-        else:
-            plt.imshow(plot_image[i],cmap="gray")
+    # for i in range(len(plot_image)):
+    #     fig.add_subplot(grid[i])
+    #     plt.axis(False)
+    #     plt.title(plot_name[i])
+    #     if i ==0:
+    #         plt.imshow(plot_image[i])
+    #     else:
+    #         plt.imshow(plot_image[i],cmap="gray")
 
     # Create sort_contours() function to grab the contour of each digit from left to right
     def sort_contours(cnts,reverse = False):
@@ -112,18 +112,18 @@ def LPR():
                 crop_characters.append(curr_num)
 
     print("Detect {} letters...".format(len(crop_characters)))
-    fig = plt.figure(figsize=(10,6))
-    plt.axis(False)
-    plt.imshow(test_roi)
+    # fig = plt.figure(figsize=(10,6))
+    # plt.axis(False)
+    # plt.imshow(test_roi)
     #plt.savefig('grab_digit_contour.png',dpi=300)
 
     fig = plt.figure(figsize=(14,4))
     grid = gridspec.GridSpec(ncols=len(crop_characters),nrows=1,figure=fig)
 
-    for i in range(len(crop_characters)):
-        fig.add_subplot(grid[i])
-        plt.axis(False)
-        plt.imshow(crop_characters[i],cmap="gray")
+    # for i in range(len(crop_characters)):
+    #     fig.add_subplot(grid[i])
+    #     plt.axis(False)
+    #     plt.imshow(crop_characters[i],cmap="gray")
     #plt.savefig("segmented_leter.png",dpi=300)    
 
     # Load model architecture, weight and labels
@@ -144,12 +144,12 @@ def LPR():
 
     final_string = ''
     for i,character in enumerate(crop_characters):
-        fig.add_subplot(grid[i])
+        # fig.add_subplot(grid[i])
         title = np.array2string(CarModel.predict_from_model(character,model,labels))
-        plt.title('{}'.format(title.strip("'[]"),fontsize=20))
+        # plt.title('{}'.format(title.strip("'[]"),fontsize=20))
         final_string+=title.strip("'[]")
-        plt.axis(False)
-        plt.imshow(character,cmap='gray')
+        # plt.axis(False)
+        #plt.imshow(character,cmap='gray')
 
     return json.dumps({'LicensePlateNumber':final_string})
     
