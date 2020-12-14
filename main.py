@@ -17,11 +17,13 @@ from sklearn.preprocessing import LabelEncoder
 import glob
 from model import CarModel
 from helpers import CarHelpers
-from keras import backend as K 
+
 import json
 
 app = Flask(__name__)
-
+global wpod_net
+global model
+global labels
 
 def base64ToImg(base64Img):
     # img=base64.b64decode(base64Img)
@@ -30,7 +32,7 @@ def base64ToImg(base64Img):
     with open("tempImage.jpg", "wb") as fh:
         fh.write(base64.b64decode(base64Img))
 
-def LPR():
+def modelLoading():
     wpod_net_path = "model/wpod-net.json"
     global wpod_net
     wpod_net = CarModel.load_model(wpod_net_path)
@@ -48,6 +50,7 @@ def LPR():
     labels.classes_ = np.load('model/license_character_classes.npy')
     print("[INFO] Labels loaded successfully...")
 
+def LPR():
     # fig = plt.figure(figsize=(12,6))
     # grid = gridspec.GridSpec(ncols=2,nrows=1,figure=fig)
     # fig.add_subplot(grid[0])
@@ -157,30 +160,16 @@ def LPR():
         # plt.axis(False)
         #plt.imshow(character,cmap='gray')
 
-    return json.dumps({'Status':'OK','LicensePlateNumber':final_string})
+    return json.dumps({'LicensePlateNumber':final_string})
     
 @app.route("/", methods=["POST"])
 def CarPlateRecognition():
-    try:
-        # print(type(request.json))
-        app_json = json.dumps(request.json)
-        json.loads(app_json)
-    except:
-        return json.dumps({'Status':'Invalid JSON','LicensePlateNumber':'-'})
-    else:
-        base64ToImg(request.json['img'])
-        licensePlate=LPR()
-        os.remove("tempImage.jpg")
-        K.clear_session()
-        global wpod_net
-        global model
-        global labels
-        del wpod_net
-        del model
-        del labels 
-        return licensePlate
-    
+    base64ToImg(request.json['img'])
+    licensePlate=LPR()
+    os.remove("tempImage.jpg")
+    return licensePlate
 
 if __name__ == "__main__":
-    #app.run(debug = True)
-    app.run(debug = True,host="0.0.0.0",port=5000)
+    modelLoading()
+    app.run(debug = True)
+    #app.run(debug = True,host="0.0.0.0",port=5000) Production use this
