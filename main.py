@@ -21,6 +21,9 @@ from helpers import CarHelpers
 import json
 
 app = Flask(__name__)
+global wpod_net
+global model
+global labels
 
 def base64ToImg(base64Img):
     # img=base64.b64decode(base64Img)
@@ -29,13 +32,25 @@ def base64ToImg(base64Img):
     with open("tempImage.jpg", "wb") as fh:
         fh.write(base64.b64decode(base64Img))
 
-def LPR():
+def modelLoading():
     wpod_net_path = "model/wpod-net.json"
+    global wpod_net
     wpod_net = CarModel.load_model(wpod_net_path)
 
-    test_image_path = "tempImage.jpg"
-    vehicle, LpImg,cor = CarHelpers.get_plate(test_image_path, wpod_net)
+    json_file = open('model/MobileNets_character_recognition.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    global model
+    model = model_from_json(loaded_model_json)
+    model.load_weights("model/License_character_recognition_weight.h5")
+    print("[INFO] Model loaded successfully...")
 
+    global labels
+    labels = LabelEncoder()
+    labels.classes_ = np.load('model/license_character_classes.npy')
+    print("[INFO] Labels loaded successfully...")
+
+def LPR():
     # fig = plt.figure(figsize=(12,6))
     # grid = gridspec.GridSpec(ncols=2,nrows=1,figure=fig)
     # fig.add_subplot(grid[0])
@@ -45,6 +60,9 @@ def LPR():
     # fig.add_subplot(grid[1])
     # plt.axis(False)
     # plt.imshow(LpImg[0])
+    
+    test_image_path = "tempImage.jpg"
+    vehicle, LpImg,cor = CarHelpers.get_plate(test_image_path, wpod_net)
 
     if (len(LpImg)): #check if there is at least one license image
         # Scales, calculates absolute values, and converts the result to 8-bit.
@@ -127,20 +145,11 @@ def LPR():
     #plt.savefig("segmented_leter.png",dpi=300)    
 
     # Load model architecture, weight and labels
-    json_file = open('model/MobileNets_character_recognition.json', 'r')
-    loaded_model_json = json_file.read()
-    json_file.close()
-    model = model_from_json(loaded_model_json)
-    model.load_weights("model/License_character_recognition_weight.h5")
-    print("[INFO] Model loaded successfully...")
+    
 
-    labels = LabelEncoder()
-    labels.classes_ = np.load('model/license_character_classes.npy')
-    print("[INFO] Labels loaded successfully...")
-
-    fig = plt.figure(figsize=(15,3))
-    cols = len(crop_characters)
-    grid = gridspec.GridSpec(ncols=cols,nrows=1,figure=fig)
+    # fig = plt.figure(figsize=(15,3))
+    # cols = len(crop_characters)
+    # grid = gridspec.GridSpec(ncols=cols,nrows=1,figure=fig)
 
     final_string = ''
     for i,character in enumerate(crop_characters):
@@ -161,5 +170,6 @@ def CarPlateRecognition():
     return licensePlate
 
 if __name__ == "__main__":
+    modelLoading()
     app.run(debug = True)
     #app.run(debug = True,host="0.0.0.0",port=5000) Production use this
